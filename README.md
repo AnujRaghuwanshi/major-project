@@ -4,29 +4,6 @@
 
 This README provides an overview of the project, including team details, relevant links, tasks completed, tech stack, key features, and steps to run the project locally.
 
-## Team Details
-
-**Team Name:** HEXA CODE
-
-**Team Leader:** [@tanyaguptaaaa29](https://github.com/tanyaguptaaaa29)
-
-**Team Members:**
-
-- **MEMBER_1** - 2023UEE4648 - [@tanyaguptaaaa29](https://github.com/tanyaguptaaaa29)
-- **MEMBER_2** - 2023UEE4661 - [@yashmit789](https://github.com/yashmit789)
-- **MEMBER_3** - 2023UCS1685 - [@Krish-Garg01](https://github.com/Krish-Garg01)
-- **MEMBER_4** - 2023UEC2596 - [@SuryanshKS](https://github.com/SuryanshKS)
-- **MEMBER_5** - 2024UCS1700 - [@dev-nihalsharma](https://github.com/dev-nihalsharma)
-- **MEMBER_6** - 2024UCA1953 - [@sujallchaudhary](https://github.com/sujallchaudhary)
-
-## Project Links
-
-- **Final SIH Presentation:** [Final SIH Presentation](/files/SIH2024_IDEA_Presentation.pdf)
-- **Internal Presentation:** [Internal Presentation](/files/Internal_PPT_HEXA-CODE.pdf)
-- **Video Demonstration:** [Watch Video](https://youtu.be/d_E6athYlJo?si=YLTsvouiLqeXzMMA)
-- **Live Deployment:** [Visit Web App](https://facultyfolio.netlify.app/)
-- **Source Code:** [GitHub Repository](https://github.com/dev-nihalsharma/sih-24-facultyfolio)
-
 ## Tasks Accomplished
 
 - [x] **User Roles & Access Control:**Role-based access control system that allows users like administrators, and Professors to perform personalized tasks.
