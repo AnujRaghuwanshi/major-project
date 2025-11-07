@@ -28,7 +28,7 @@ export function TopFacultiesCard() {
 
       setLoading(true);
       try {
-        const response = await axios.post(`${process.env.API_ENDPOINT}/users/faculty/appraisal`, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/faculty/appraisal`, {
           token: token,
         });
         const sortedData = response.data.sort((a: Faculty, b: Faculty) => b.appraisal - a.appraisal);

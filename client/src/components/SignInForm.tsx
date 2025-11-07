@@ -18,7 +18,7 @@ const SignInForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await axios.post(`${process.env.API_ENDPOINT}/auth/login`, { email, password });
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/login`, { email, password });
       if (res?.data?.success) {
         document.cookie = `token=${res?.data?.data?.token}; path=/; secure; samesite=strict`;
         document.cookie = `user=${encodeURIComponent(

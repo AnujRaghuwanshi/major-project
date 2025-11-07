@@ -21,7 +21,7 @@ const Page: React.FC = () => {
     setIsSubmitting(true);
     if (sendOtp) {
       try {
-        const res = await axios.post(`${process.env.API_ENDPOINT}/auth/verifyOTP`, {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/verifyOTP`, {
           email,
           otp,
           password,
@@ -42,7 +42,7 @@ const Page: React.FC = () => {
 
   const sendTheOtp = async () => {
     try {
-      await axios.post(`${process.env.API_ENDPOINT}/auth/forgotpassword`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/forgotpassword`, {
         email,
       });
       setSendOtp(true);

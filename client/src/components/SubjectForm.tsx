@@ -10,7 +10,7 @@ const SubjectForm = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      await axios.post(`${process.env.API_ENDPOINT}/subject/add`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/subject/add`, {
         _orgId: '357719f42dda',
         name,
         code,

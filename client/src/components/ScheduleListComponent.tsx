@@ -65,7 +65,7 @@ export function ScheduleListComponent() {
   }, []);
   useEffect(() => {
     const sendRequest = async () => {
-      const response = axios.post(`${process.env.API_ENDPOINT}/attendance/add`, {
+      const response = axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/attendance/add`, {
         token,
         date: formatDate(Date.now()),
         day: getDayName(),
@@ -87,7 +87,7 @@ export function ScheduleListComponent() {
     try {
       const currentTimestamp = Date.now();
       const formattedDate = formatDate(currentTimestamp);
-      const response = await axios.post(`${process.env.API_ENDPOINT}/attendance`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/attendance`, {
         token: token,
         _facultyId: id,
         date: formattedDate,
@@ -111,7 +111,7 @@ export function ScheduleListComponent() {
       try {
         const currentTimestamp = Date.now();
         const formattedDate = formatDate(currentTimestamp);
-        const response = await axios.post(`${process.env.API_ENDPOINT}/attendance`, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/attendance`, {
           token: token,
           _facultyId: id,
           date: formattedDate,
@@ -135,7 +135,7 @@ export function ScheduleListComponent() {
 
   const handleUpdateAttendance = async (eventId: string) => {
     try {
-      await axios.post(`${process.env.API_ENDPOINT}/attendance/update/${eventId}`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/attendance/update/${eventId}`, {
         isPresent: true,
         token: token,
       });

@@ -35,7 +35,7 @@ const SignUpForm = () => {
       }
 
       if (role === 'admin') {
-        const res = await axios.post(`${process.env.API_ENDPOINT}/auth/register/admin`, {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/register/admin`, {
           fullName,
           email,
           uniName: universityName,
@@ -57,7 +57,7 @@ const SignUpForm = () => {
           return;
         }
       } else {
-        const res = await axios.post(`${process.env.API_ENDPOINT}/auth/register/faculty`, {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/register/faculty`, {
           fullName: fullName,
           email,
           password,
@@ -91,7 +91,7 @@ const SignUpForm = () => {
   useEffect(() => {
     const fetchSubject = async () => {
       try {
-        const response = await axios.post(`${process.env.API_ENDPOINT}/reviews/subject`);
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/reviews/subject`);
         setSubjects(response.data);
       } catch (error) {
         console.error('Failed to fetch subjects', error);

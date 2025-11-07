@@ -56,7 +56,7 @@ export default function Home() {
     if (token) {
       const fetchFacultySingle = async () => {
         try {
-          const response = await axios.post(`${process.env.API_ENDPOINT}/users/faculty/${params.id}`, {
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/faculty/${params.id}`, {
             token: token,
           });
           setUser(response?.data?.fullName);

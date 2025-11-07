@@ -52,7 +52,7 @@ const Timetable: React.FC = () => {
   useEffect(() => {
     const fetchTimetable = async () => {
       try {
-        const response = await axios.post(`${process.env.API_ENDPOINT}/timetable`, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/timetable`, {
           token: token, // Pass token from context
         });
         const mappedData = response.data.map((item: any) => {

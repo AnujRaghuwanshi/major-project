@@ -68,7 +68,7 @@ export default function EditTimetableModal({ show, onClose, onSuccess }: EditTim
         //   formattedEnd
         // );
 
-        const response = await axios.post(`${process.env.API_ENDPOINT}/timetable/add`, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/timetable/add`, {
           token: token,
           day,
           startTime: formattedStart,
@@ -89,10 +89,10 @@ export default function EditTimetableModal({ show, onClose, onSuccess }: EditTim
     if (token) {
       // console.log(token);
       const fetchFacultyAndSubjects = async () => {
-        const facultyResponse = await axios.post(`${process.env.API_ENDPOINT}/users/faculty`, {
+        const facultyResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/faculty`, {
           token,
         });
-        const subjectResponse = await axios.post(`${process.env.API_ENDPOINT}/subject`, {
+        const subjectResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/subject`, {
           token,
         });
 

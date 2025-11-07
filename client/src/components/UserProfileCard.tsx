@@ -39,7 +39,7 @@ export function UserProfileCard({ user }: UserProfileProps) {
     const fetchEvent = async () => {
       try {
         const response = await axios.post(
-          `${process.env.API_ENDPOINT}/event`,
+          `${process.env.NEXT_PUBLIC_API_ENDPOINT}/event`,
           { token } // Send token from context
         );
         console.log(response);

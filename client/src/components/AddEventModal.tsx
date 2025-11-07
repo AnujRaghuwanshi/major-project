@@ -51,7 +51,7 @@ export default function AddEventModal({ show, onClose }: AddEventModalProps) {
     e.preventDefault();
     if (token) {
       try {
-        const response = await axios.post(`${process.env.API_ENDPOINT}/event/add`, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/event/add`, {
           token,
           name,
           type,
@@ -84,7 +84,7 @@ export default function AddEventModal({ show, onClose }: AddEventModalProps) {
   };
   useEffect(() => {
     const fetchFaculty = async () => {
-      const facultyResponse = await axios.post(`${process.env.API_ENDPOINT}/users/faculty`, { token });
+      const facultyResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/faculty`, { token });
       setFacultyData(facultyResponse?.data);
     };
     if (token) {
