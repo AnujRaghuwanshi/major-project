@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface FormData {
   publicationTitle: string;
@@ -33,6 +33,62 @@ export default function PublicationForm() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [token, setToken] = useState('');
+  const [userData, setUserData] = useState<any>(null);
+  const [publicationCount, setPublicationCount] = useState<number>(0);
+  const [loadingCount, setLoadingCount] = useState(true);
+
+  useEffect(() => {
+    const getCookieValue = (name: string) => {
+      if (typeof document !== 'undefined') {
+        const cookies = document.cookie.split('; ');
+        const cookie = cookies.find((cookie) => cookie.startsWith(`${name}=`));
+        return cookie ? cookie.split('=')[1] : null;
+      }
+      return null;
+    };
+
+    const tokenValue = getCookieValue('token');
+    const userCookie = getCookieValue('user');
+    
+    if (tokenValue) setToken(tokenValue);
+    
+    if (userCookie) {
+      try {
+        const user = JSON.parse(decodeURIComponent(userCookie));
+        setUserData(user);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchPublicationCount = async () => {
+      if (!userData?._id || !token) return;
+      
+      try {
+        const API_ENDPOINT = 'http://localhost:8090';
+        const response = await fetch(`${API_ENDPOINT}/publications/fetch?_facultyId=${userData._id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const publications = await response.json();
+          setPublicationCount(publications.length);
+        }
+      } catch (error) {
+        console.error('Error fetching publication count:', error);
+      } finally {
+        setLoadingCount(false);
+      }
+    };
+
+    fetchPublicationCount();
+  }, [userData, token]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -50,30 +106,49 @@ export default function PublicationForm() {
     setLoading(true);
     setMessage('');
 
+    if (!formData.publicationTitle || !formData.publicationType || !formData.journalName) {
+      setMessage('✗ Please fill in all required fields');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Submit to dummy API (JSONPlaceholder)
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+      const API_ENDPOINT = 'http://localhost:8090';
+      
+      const submissionData = {
+        token: token,
+        _orgId: userData?._orgId,
+        _facultyId: userData?._id,
+        publicationTitle: formData.publicationTitle,
+        publicationType: formData.publicationType,
+        journalName: formData.journalName,
+        publicationDate: formData.publicationDate,
+        doi: formData.doi,
+        coAuthors: formData.coAuthors,
+        indexed: formData.indexed,
+        authorRole: formData.authorRole,
+        publicationPdf: formData.publicationPdf?.name || null,
+        indexingProof: formData.indexingProof?.name || null,
+        abstract: formData.abstract,
+      };
+
+      const response = await fetch(`${API_ENDPOINT}/publications/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title: formData.publicationTitle,
-          body: JSON.stringify({
-            ...formData,
-            publicationPdf: formData.publicationPdf?.name || null,
-            indexingProof: formData.indexingProof?.name || null,
-          }),
-          userId: 1,
-        }),
+        body: JSON.stringify(submissionData),
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        const result = await response.json();
-        setMessage('✓ Publication submitted successfully! ID: ' + result.id);
+        setMessage('✓ Publication submitted successfully!');
         console.log('Submitted data:', result);
         
-        // Reset form after 2 seconds
+        // Update publication count
+        setPublicationCount(prev => prev + 1);
+        
         setTimeout(() => {
           setFormData({
             publicationTitle: '',
@@ -91,9 +166,9 @@ export default function PublicationForm() {
           setMessage('');
         }, 2000);
       } else {
-        setMessage('✗ Error submitting publication. Please try again.');
+        setMessage('✗ ' + (result.error || 'Error submitting publication. Please try again.'));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
       setMessage('✗ Error submitting publication. Please try again.');
     } finally {
@@ -119,18 +194,26 @@ export default function PublicationForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50  pt-10">
+    <div className="min-h-screen bg-gray-50 pt-10">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-8">
-          Quick Entry - Add Publication
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Quick Entry - Add Publication
+          </h1>
+          
+          <div className="bg-blue-50 border border-blue-200 rounded-lg px-6 py-3">
+            <div className="text-sm text-gray-600 mb-1">Total Publications</div>
+            <div className="text-3xl font-bold text-blue-600">
+              {loadingCount ? '...' : publicationCount}
+            </div>
+          </div>
+        </div>
 
         <div className="space-y-6">
-          {/* Row 1 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Publication Title
+                Publication Title <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -144,7 +227,7 @@ export default function PublicationForm() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Publication Type
+                Publication Type <span className="text-red-500">*</span>
               </label>
               <select
                 name="publicationType"
@@ -161,11 +244,10 @@ export default function PublicationForm() {
             </div>
           </div>
 
-          {/* Row 2 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Journal/Conference Name
+                Journal/Conference Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -186,13 +268,11 @@ export default function PublicationForm() {
                 name="publicationDate"
                 value={formData.publicationDate}
                 onChange={handleInputChange}
-                placeholder="dd-mm-yyyy"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
 
-          {/* Row 3 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -223,7 +303,6 @@ export default function PublicationForm() {
             </div>
           </div>
 
-          {/* Row 4 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -263,7 +342,6 @@ export default function PublicationForm() {
             </div>
           </div>
 
-          {/* Row 5 - File Uploads */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -296,7 +374,6 @@ export default function PublicationForm() {
             </div>
           </div>
 
-          {/* Abstract */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Abstract
@@ -311,14 +388,12 @@ export default function PublicationForm() {
             />
           </div>
 
-          {/* Message */}
           {message && (
             <div className={`p-4 rounded-md ${message.includes('Error') || message.includes('✗') ? 'bg-red-50 text-red-800 border border-red-200' : 'bg-green-50 text-green-800 border border-green-200'}`}>
               {message}
             </div>
           )}
 
-          {/* Buttons */}
           <div className="flex justify-between items-center pt-4 border-t">
             <button
               type="button"
@@ -328,12 +403,6 @@ export default function PublicationForm() {
               Cancel
             </button>
             <div className="flex gap-4">
-              <button
-                type="button"
-                className="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
-              >
-                Verify
-              </button>
               <button
                 type="button"
                 onClick={handleSubmit}

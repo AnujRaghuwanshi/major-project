@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 
 interface ProjectFormData {
@@ -32,6 +32,33 @@ export default function ProjectSubmissionForm() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [token, setToken] = useState('');
+  const [userData, setUserData] = useState<any>(null);
+
+  useEffect(() => {
+    const getCookieValue = (name: string) => {
+      if (typeof document !== 'undefined') {
+        const cookies = document.cookie.split('; ');
+        const cookie = cookies.find((cookie) => cookie.startsWith(`${name}=`));
+        return cookie ? cookie.split('=')[1] : null;
+      }
+      return null;
+    };
+
+    const tokenValue = getCookieValue('token');
+    const userCookie = getCookieValue('user');
+    
+    if (tokenValue) setToken(tokenValue);
+    
+    if (userCookie) {
+      try {
+        const user = JSON.parse(decodeURIComponent(userCookie));
+        setUserData(user);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -50,7 +77,6 @@ export default function ProjectSubmissionForm() {
     setLoading(true);
     setMessage('');
 
-    // Basic validation
     if (!formData.projectTitle || !formData.projectDescription || !formData.projectType) {
       setMessage('✗ Please fill in all required fields');
       setLoading(false);
@@ -58,25 +84,38 @@ export default function ProjectSubmissionForm() {
     }
 
     try {
-      // Submit to dummy API (JSONPlaceholder)
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+      const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT || 'http://localhost:8090';
+      
+      const submissionData = {
+        token: token,
+        _orgId: userData?._orgId,
+        _facultyId: userData?._id,
+        projectTitle: formData.projectTitle,
+        projectDescription: formData.projectDescription,
+        projectType: formData.projectType,
+        domainArea: formData.domainArea,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        isOngoing: formData.isOngoing,
+        principalInvestigator: formData.principalInvestigator,
+        coInvestigators: formData.coInvestigators,
+        githubLink: formData.githubLink,
+      };
+
+      const response = await fetch(`${API_ENDPOINT}/projects/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title: formData.projectTitle,
-          body: JSON.stringify(formData),
-          userId: 1,
-        }),
+        body: JSON.stringify(submissionData),
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        const result = await response.json();
-        setMessage('✓ Project submitted successfully! ID: ' + result.id);
+        setMessage('✓ Project submitted successfully! ID: ' + result.data._id);
         console.log('Submitted project data:', result);
         
-        // Reset form after 2 seconds
         setTimeout(() => {
           setFormData({
             projectTitle: '',
@@ -93,9 +132,9 @@ export default function ProjectSubmissionForm() {
           setMessage('');
         }, 2000);
       } else {
-        setMessage('✗ Error submitting project. Please try again.');
+        setMessage('✗ ' + (result.error || 'Error submitting project. Please try again.'));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
       setMessage('✗ Error submitting project. Please try again.');
     } finally {
@@ -120,18 +159,18 @@ export default function ProjectSubmissionForm() {
   };
 
   const handleBack = () => {
-    console.log('Navigate back');
-    // In a real app, you'd use: router.back() or router.push('/previous-page')
+    if (typeof window !== 'undefined') {
+      window.history.back();
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
       <div className="bg-blue-700 text-white py-4 px-6">
         <div className="max-w-6xl mx-auto flex items-center gap-4">
           <button
             onClick={handleBack}
-            className="p-2 hover:bg-slate-700 rounded transition-colors"
+            className="p-2 hover:bg-blue-800 rounded transition-colors"
             aria-label="Go back"
           >
             <ArrowLeft size={24} />
@@ -140,11 +179,9 @@ export default function ProjectSubmissionForm() {
         </div>
       </div>
 
-      {/* Form Content */}
       <div className="max-w-6xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="space-y-6">
-            {/* Project Title */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Project Title <span className="text-red-500">*</span>
@@ -158,7 +195,6 @@ export default function ProjectSubmissionForm() {
               />
             </div>
 
-            {/* Project Description / Abstract */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Project Description / Abstract <span className="text-red-500">*</span>
@@ -172,7 +208,6 @@ export default function ProjectSubmissionForm() {
               />
             </div>
 
-            {/* Project Type and Domain */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -182,7 +217,7 @@ export default function ProjectSubmissionForm() {
                   name="projectType"
                   value={formData.projectType}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white appearance-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                 >
                   <option value="">Select Project Type</option>
                   <option value="research">Research Project</option>
@@ -207,7 +242,6 @@ export default function ProjectSubmissionForm() {
               </div>
             </div>
 
-            {/* Start Date and End Date */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -218,7 +252,6 @@ export default function ProjectSubmissionForm() {
                   name="startDate"
                   value={formData.startDate}
                   onChange={handleInputChange}
-                  placeholder="dd-mm-yyyy"
                   className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -232,14 +265,12 @@ export default function ProjectSubmissionForm() {
                   name="endDate"
                   value={formData.endDate}
                   onChange={handleInputChange}
-                  placeholder="dd-mm-yyyy"
                   disabled={formData.isOngoing}
                   className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
               </div>
             </div>
 
-            {/* Mark as Ongoing Checkbox */}
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -254,7 +285,6 @@ export default function ProjectSubmissionForm() {
               </label>
             </div>
 
-            {/* Principal Investigator */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Principal Investigator (PI) <span className="text-red-500">*</span>
@@ -268,7 +298,6 @@ export default function ProjectSubmissionForm() {
               />
             </div>
 
-            {/* Co-Investigators */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Co-Investigators (if any)
@@ -283,7 +312,6 @@ export default function ProjectSubmissionForm() {
               />
             </div>
 
-            {/* GitHub Link */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 GitHub Link <span className="text-red-500">*</span>
@@ -298,7 +326,6 @@ export default function ProjectSubmissionForm() {
               />
             </div>
 
-            {/* Message */}
             {message && (
               <div className={`p-4 rounded-md ${
                 message.includes('Error') || message.includes('✗') 
@@ -309,7 +336,6 @@ export default function ProjectSubmissionForm() {
               </div>
             )}
 
-            {/* Buttons */}
             <div className="flex justify-end gap-4 pt-4">
               <button
                 type="button"
@@ -322,7 +348,7 @@ export default function ProjectSubmissionForm() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-400 transition-colors disabled:bg-amber-400 disabled:cursor-not-allowed font-medium"
+                className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed font-medium"
               >
                 {loading ? 'Submitting...' : 'Submit Project'}
               </button>
