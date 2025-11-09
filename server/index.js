@@ -12,7 +12,9 @@ const timeTableRoutes = require('./routes/timeTable');
 const attendanceRoutes = require('./routes/attendance');
 const eventRoutes = require('./routes/event');
 const studentReviewRoutes = require('./routes/studentReview');
-
+const projectRoutes = require('./routes/project');
+const publicationRoutes = require('./routes/publication');
+const testDataRoutes = require('./routes/testData');
 app.use(cors());
 dotenv.config();
 sequelize.sync();
@@ -20,13 +22,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/auth', authRoutes);
 app.use('/reviews', studentReviewRoutes);
-app.use(jwtVerify);
+// app.use(jwtVerify);
 app.use('/subject', subjectRoutes);
 app.use('/users', adminRoutes);
 app.use('/users', facultyRoutes);
 app.use('/timetable', timeTableRoutes);
 app.use('/attendance', attendanceRoutes);
 app.use('/event', eventRoutes);
+app.use('/project', projectRoutes);
+app.use('/publications', publicationRoutes);
+app.use('/test-data', testDataRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on ${process.env.PORT}`);
