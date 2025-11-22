@@ -14,6 +14,8 @@ import {
   FaTimes,
   FaFileAlt,
   FaPlus,
+  FaBook,
+  FaProjectDiagram,
 } from 'react-icons/fa';
 import { MdLogout, MdOutlineDashboard } from 'react-icons/md';
 
@@ -152,6 +154,26 @@ const Sidebar: React.FC<SidebarProps> = ({ username, role, id }) => {
               >
                 <FaPlus className="mr-2 text-xl" />
                 Add Publication
+              </Link>
+
+              <Link
+                href="/myPublication"
+                className={`p-4 m-2 flex items-center text-gray-700 hover:text-white ${
+                  pathName === '/myPublication' && 'bg-[#0179FE] text-white'
+                } transition-colors rounded-md hover:bg-[#0179FE]`}
+              >
+                <FaBook className="mr-2 text-xl" />
+                My Publications
+              </Link>
+
+              <Link
+                href="/myProject"
+                className={`p-4 m-2 flex items-center text-gray-700 hover:text-white ${
+                  pathName === '/myProject' && 'bg-[#0179FE] text-white'
+                } transition-colors rounded-md hover:bg-[#0179FE]`}
+              >
+                <FaProjectDiagram className="mr-2 text-xl" />
+                My Projects
               </Link>
             </>
           )}

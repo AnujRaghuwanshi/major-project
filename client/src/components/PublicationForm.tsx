@@ -194,19 +194,19 @@ export default function PublicationForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-10">
+    <div className="min-h-screen bg-gray-50 ">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-semibold text-gray-800">
             Quick Entry - Add Publication
           </h1>
           
-          <div className="bg-blue-50 border border-blue-200 rounded-lg px-6 py-3">
+          {/* <div className="bg-blue-50 border border-blue-200 rounded-lg px-6 py-3">
             <div className="text-sm text-gray-600 mb-1">Total Publications</div>
             <div className="text-3xl font-bold text-blue-600">
               {loadingCount ? '...' : publicationCount}
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className="space-y-6">
