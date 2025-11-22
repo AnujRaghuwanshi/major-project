@@ -131,25 +131,30 @@ const Sidebar: React.FC<SidebarProps> = ({ username, role, id }) => {
             Events
           </Link>
 
-          <Link
-            href="/projectSubmissionForm"
-            className={`p-4 m-2 flex items-center text-gray-700 hover:text-white ${
-              pathName === '/projectSubmissionForm' && 'bg-[#0179FE] text-white'
-            } transition-colors rounded-md hover:bg-[#0179FE]`}
-          >
-            <FaFileAlt className="mr-2 text-xl" />
-            Project Submission
-          </Link>
+          {/* Only show Project Submission and Add Publication if role is NOT admin */}
+          {role !== 'admin' && (
+            <>
+              <Link
+                href="/projectSubmissionForm"
+                className={`p-4 m-2 flex items-center text-gray-700 hover:text-white ${
+                  pathName === '/projectSubmissionForm' && 'bg-[#0179FE] text-white'
+                } transition-colors rounded-md hover:bg-[#0179FE]`}
+              >
+                <FaFileAlt className="mr-2 text-xl" />
+                Project Submission
+              </Link>
 
-          <Link
-            href="/addPublication"
-            className={`p-4 m-2 flex items-center text-gray-700 hover:text-white ${
-              pathName === '/addPublication' && 'bg-[#0179FE] text-white'
-            } transition-colors rounded-md hover:bg-[#0179FE]`}
-          >
-            <FaPlus className="mr-2 text-xl" />
-            Add Publication
-          </Link>
+              <Link
+                href="/addPublication"
+                className={`p-4 m-2 flex items-center text-gray-700 hover:text-white ${
+                  pathName === '/addPublication' && 'bg-[#0179FE] text-white'
+                } transition-colors rounded-md hover:bg-[#0179FE]`}
+              >
+                <FaPlus className="mr-2 text-xl" />
+                Add Publication
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* Footer / Profile Info */}
