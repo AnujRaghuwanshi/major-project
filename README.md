@@ -1,4 +1,4 @@
-# Automated System for Career Advancements of the Faculties of Higher Education
+# Higher Education Careeer Advancement and Monitoring System
 
 <img src="/files/facultyfolio-techstack.png" width="full" />
 
